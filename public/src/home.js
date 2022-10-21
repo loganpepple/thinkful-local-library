@@ -13,17 +13,17 @@ function getBooksBorrowedCount(books) {
 }
 
 function getMostCommonGenres(books) {
-  let genreList = [];
-  books.forEach(({genre}) => {
-    const genreIndex = genreList.findIndex(({name: genreName}) => genreName == genre);
+  let genres = books.reduce((list, {genre}) => {
+    const genreIndex = list.findIndex(({name: genreName}) => genreName == genre);
     if (genreIndex > -1) {
-      genreList[genreIndex].count++
+      list[genreIndex].count++
     } else {
-      genreList.push({name: `${genre}`, count: 1});
+      list.push({name: `${genre}`, count: 1});
     }
-  })
+    return list;
+  }, [])
 
-  return topFiveByCount(genreList);
+  return topFiveByCount(genres);
 }
 
 function getMostPopularBooks(books) {
@@ -35,15 +35,15 @@ function getMostPopularBooks(books) {
 }
 
 function getMostPopularAuthors(books, authors) {
-  let authorList = []
-  books.forEach(({authorId, borrows}) => {
-    const authorIndex = authorList.findIndex(({name}) => name == authorId);
+  let authorList = books.reduce((list, {authorId, borrows}) => {
+    const authorIndex = list.findIndex(({name}) => name == authorId);
     if (authorIndex > -1) {
-      authorList[authorIndex].count += borrows.length;
+      list[authorIndex].count += borrows.length;
     } else {
-      authorList.push({id: authorId, count: borrows.length});
+      list.push({id: authorId, count: borrows.length});
     }
-  })
+    return list;
+  }, [])
 
   authorList = authorList.map(({id, count}) => {
     const {name} = findAuthorById(authors, id);
